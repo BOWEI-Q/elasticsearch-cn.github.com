@@ -8,6 +8,7 @@ sidebar: reference_mapping
 
 p.  @multi_field@ 多域类型允许你对同一个值以映射的方式定义成多个基本类型 "core_types":core-types.html . 这个非常有用，比如，如果你定义一个 @string@ 类型的字段，你需要这个字段的分词一会是 @analyzed@ ，但是有时候又希望该字段是 @not_analyzed@ 类型的，通过使用 @multi_field@ 就可以很方便的解决这个问题. 下面来看个例子:
 
+
 <pre class="prettyprint lang-js">
 {
     "tweet" : {
