@@ -3,7 +3,7 @@ layout: guide
 title: Mapping
 cat: 向导
 cat_link: guide
-sidebar: 帮助文档_Mapping映射
+sidebar: reference_mapping
 ---
 
 p. Mapping定义其实就是定义搜索引擎如何处理这些索引文档的规则的过程，这些定义包括字段是否可被搜索，采用何种分词切分方式等等. 在 ElasticSearch 里, 一个索引允许同时存在不同类型（mapping types,以后简称类型）的索引文档. 并且 ElasticSearch 能够对每个类型分别进行定义.
