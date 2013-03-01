@@ -5,14 +5,16 @@ cat: download
 title_in_header: false
 ---
 
+<h3>æ‚¨å½“å‰è®¿é—®çš„ä¸­æ–‡é¡µé¢è‹¥æœªèƒ½åŠæ—¶æ›´æ–°ï¼Œè¯·è®¿é—® http://www.elasticsearch.org/download/</h3>
 
-
-<h3>Äúµ±Ç°·ÃÎÊµÄÖĞÎÄÒ³ÃæÈôÎ´ÄÜ¼°Ê±¸üĞÂ£¬Çë·ÃÎÊ http://www.elasticsearch.org/download/</h3>
-
-<h3>Current release:</h3>
+<h3>Current releases:</h3>
 <p>
     Latest stable release of <strong>elasticsearch</strong> is
-    <a href="/download/2011/11/16/0.18.3.html"><b>0.18.3</b></a>.
+    <a href="/download/2013/02/14/0.20.5.html"><b>0.20.5</b></a>.
+</p>
+<p>
+    Latest beta release of <strong>elasticsearch</strong> is
+    <a href="/download/2013/02/26/0.90.0.Beta1.html"><b>0.90.0.Beta1</b></a>.
 </p>
 <h3>Building from source:</h3>
 <p>Master can be downloaded <a href="/download/master/">here</a> (requires building from source).</p>
@@ -20,7 +22,11 @@ title_in_header: false
 <ul>
     {% for download in site.categories.download %}
     <li>
-        <a href="{{download.url}}">{{download.version}}</a>
+        <a href="{{download.url}}">{{download.version}}</a> - <i>{{ download.date | date:"%Y-%m-%d" }}</i>
     </li>
     {% endfor %}
 </ul>
+
+<script>
+    jQuery(document).ready( function() { $("#training-ticker").ticker( { url: 'http://elasticsearch.com/training.json', interval: 5000 } ) } );
+</script>
