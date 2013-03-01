@@ -5,26 +5,26 @@ cat: concepts
 sidebar: scaling-lucene 
 ---
 
-p. As we have discussed before, commit is heavy operation but is required to make sure that the index data is persisted. If node or machine holding the index crashes before the commit we can lose the data that has been indexed since last commit.
+p. 正如前面提到过的，索引提交（commit）的开销实在太大，但是我们又必须通过提交操作来保证数据被可靠的持久化，如果拥有数据的节点突然崩溃的话，那么最后一次提交操作之后产生的数据操作将会丢失。
 
-h2. Data Persistency
+h2. 数据可靠性（Data Persistency）
 
-p. This is solved by having a *transaction log* (or write ahead log) that records the fact that operation has happened on the index and there is no need to call the commit to make the data persistent. It can be more naturally supported by push replication because we can have that transaction log in all the different shards. If something crashes then that log can be easily replayed when needed.
+p. ElasticSearch通过使用 *transaction log* (或预写日志(write ahead log)) 来解决这个问题，通过日志记录发生在索引上的各种操作，来保证就算没有调用commit操作也能保证数据的持久化。并且能够很自然的支持推送复制（push replication），因为我们能够让每个不同的shard都拥有 *transaction log* ，就算某些节点崩溃了，如果有必要，可以很轻松对日志操作进行重放（replay）。
 
-p. Transaction log is periodically flushed and you can "control":../../../reference/index-modules/translog.html that. Simply it is here to keep record of changes between two consecutive commits.
+p. Transaction log 周期性的将数据刷新(flushed)到磁盘，你可以通过  "参数":../../../reference/index-modules/translog.html 来进行控制. 简单来说就是保存两次提交之间的连续数据操作的记录。
 
-p. Even if you run a single elasticsearch server (no need to be distributed) the transaction log allows for it to survive “kill -9” because we can fsync the transaction log with every change and the data is fully persistent.
+p. 尽管你只运行了一个elasticsearch的服务节点（可能暂时不需要分布式），trasncation log也能够使你的es即使被强制结束进程（ “kill -9” ）也不会丢失任何数据。
 
-p. But there is more to it! Transaction log plays important part not just in making sure indexed data does not get lost, but also when doing both *shared gateway snapshot*, and when doing *peer shard recovery* (or shard "Hot" relocation).
+p. 当然，还不止这些！Transaction log还有一个重要的功能就是可以保证当你生成快照（ *shared gateway snapshot* ）、分片恢复（ *peer shard recovery* ）或是分片热迁移（shard "Hot" relocation）的时候，索引数据不会丢失。
 
 h2. Shared Gateway Snapshot
 
-p. When shared gateway is used then it periodically makes "snapshots":../../../reference/api/admin-indices-gateway-snapshot.html of changes to a shared storage and transaction log is also part of that persisted data.
+p. 使用共享gateway时，会周期性的生成数据改变(changes)的快照 ( "snapshots":../../../reference/api/admin-indices-gateway-snapshot.html ) ，并存储到共享存储中（shared storage),并且transaction log也是持久化数据的一部分.
 
 h2. Peer Shard Reovery
 
-p. When shard relocate from one node to another or when more shard replicas are allocated (for example if you "increase":../../../reference/api/admin-indices-update-settings.html number of replicas) then they recover from one another and not from gateway.
+p. 当分片从一个节点迁移到另一个节点或者需要分配更多的分片(比如你 "增加":../../../reference/api/admin-indices-update-settings.html 了副本数) 的时候，数据会从某一个节点上取来进行恢复，而不是从gateway.
 
-p. When the relocation happens, we make sure that we do not delete the Lucene segment files, we disable flushing, we do not call commit and we start to transfer these segment files, and we only store the changes into transaction log. Once that phase is done (ie. we copied over all the index files), we start replaying the transaction log into to replica and then we do the switch.
+p. 迁移数据时，首先我们保证不会删除Lucene的段文件（segment files),然后禁用flushing操作，这个时候保证不调用commit操作，然后开始迁移这些段文件，这个时候产生的索引改变，我们存放到transaction log中，一旦这个步骤结束（ie：索引索引文件拷贝完毕），我们开始transaction log里面的操作replay到replica分片，完毕之后，我们就可以进行切换了，数据迁移成功！
 
-p. You can still index the data, you can still search, there is a very small period of time where things are blocking just to make the switch, but up until that time the relocation is completely transparent.
+p. 迁移操作进行时，你任然可以进行索引，任然可以进行搜索，只有索引切换的时候会有一段很短的时间阻塞（blocking），但是直到切换前，迁移对你来说是完全透明的。
