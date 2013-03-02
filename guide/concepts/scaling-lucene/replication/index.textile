@@ -9,7 +9,7 @@ sidebar: scaling-lucene
 
 * *High Availability* (HA高可用性). 如果一个节点挂了，另外一个节点能从它趴下的地方应头顶上,如果一个节点上面持有索引分片，而另一个节点持有该分片的副本，那么我们的数据就有了一个备份.
 
-* 拥有数据多个副本的另一个好处就是 *scalability* (可伸缩性). 我们没有理由不通过增加副本来提高搜索能力，而我们只需要简单的增加几个副本或从节点（slave nodes）就能提升我们搜索的吞吐，而乐而不为呢.
+* 拥有数据多个副本的另一个好处就是 *scalability* (可伸缩性). 我们没有理由不通过增加副本来提高搜索能力，而我们只需要简单的增加几个副本或从节点（slave nodes）就能提升我们搜索的吞吐，何乐而不为呢.
 
 p. 一般有两种方式来实现复制: *Push Replication（推模式）* 和 *Pull Replication（拉模式）*. Elasticsearch 使用的是Push Replication(推模式).
 
